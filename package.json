@@ -1,0 +1,21 @@
+{
+  "name": "upload-to-s3",
+  "version": "1.0.0",
+  "description": "tentativa de enviar medias pro s3",
+  "main": "main.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn main.ts",
+    "build": "tsc -p .",
+    "start": "node dist/main.js"
+  },
+  "author": "jefaokpta@hotmail.com",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.4.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.1.6"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.363.0"
+  }
+}
