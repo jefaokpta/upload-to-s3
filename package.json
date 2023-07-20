@@ -4,7 +4,7 @@
   "description": "tentativa de enviar medias pro s3",
   "main": "main.js",
   "scripts": {
-    "dev": "ts-node-dev --respawn main.ts",
+    "dev": "ts-node-dev main.ts",
     "build": "tsc -p .",
     "start": "node dist/main.js"
   },

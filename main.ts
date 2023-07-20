@@ -3,7 +3,7 @@
  * Date: 06/07/23
  */
 import {readdirSync, readFileSync} from 'fs';
-import {PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
+import {GetObjectCommand, ListObjectsCommand, PutObjectCommand, S3Client} from "@aws-sdk/client-s3";
 import path from "path";
 import * as fs from "fs";
 
@@ -11,24 +11,29 @@ import * as fs from "fs";
 const s3 = new S3Client({
     region: 'us-east-1',
 })
-// console.log('Uploading file...')
-//
-// const fileContent = readFileSync('./arma.jpg');
-//
-// const params = {
-//     Bucket: 'wip-medias',
-//     Key: 'uploads/teste.jpg',
-//     Body: fileContent,
-//
-// }
-//
-// s3.send(new PutObjectCommand(params))
-//     .then(() => {
-//         console.log(`File uploaded successfully. ${params.Key}`);
-//     })
-//     .catch((err) => {
-//         console.log(err);
-//     })
+
+function uploadFile(){
+    console.log('Uploading file...')
+
+    const fileContent = readFileSync('./arma.jpg');
+
+    const params = {
+        Bucket: 'wip-medias',
+        Key: 'uploads/teste.jpg',
+        Body: fileContent,
+
+    }
+
+    s3.send(new PutObjectCommand(params))
+        .then(() => {
+            console.log(`File uploaded successfully. ${params.Key}`);
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+}
+
+//uploadFile();
 
 function uploadFolderToS3(folderPath: string, bucketName: string) {
     const folderContent = readdirSync(folderPath, { withFileTypes: true });
@@ -51,22 +56,30 @@ function uploadFolderToS3(folderPath: string, bucketName: string) {
 
 //uploadFolderToS3('./auth_info_multi-100023', 'wip-medias');
 
-function restoreFolderFromS3(bucketName: string, folderPath: string) {
+function restoreFolderFromS3(bucketName: string, folderName: string) {
     const params = {
         Bucket: bucketName,
-        Prefix: folderPath
+        Prefix: `auths/${folderName}`
     }
 
-    s3.listObjectsV2(params)
+    s3.send(new ListObjectsCommand(params))
         .then(data => {
+            if (!data.Contents){
+                console.log('Sem arquivos.')
+                return
+            }
+            fs.existsSync(folderName) || fs.mkdirSync(folderName)
             for (const item of data.Contents) {
+                console.log(item.Key)
                 const params = {
                     Bucket: bucketName,
                     Key: item.Key
                 }
-                s3.getObject(params)
-                    .then(data => {
-                        fs.writeFileSync(item.Key, data.Body)
+                console.log(item.Key?.substring(item.Key?.indexOf('/') + 1))
+
+                s3.send(new GetObjectCommand(params))
+                    .then(async data => {
+                        fs.writeFileSync(`./${folderName}/${item.Key?.split('/').pop()}`, await data.Body!.transformToString('utf-8'))
                     })
                     .catch(err => {
                         console.log(err)
@@ -77,4 +90,6 @@ function restoreFolderFromS3(bucketName: string, folderPath: string) {
             console.log(err)
         })
 }
+
+restoreFolderFromS3('wip-medias', 'auth_info_multi-100023/');
 
