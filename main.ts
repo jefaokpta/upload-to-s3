@@ -75,7 +75,6 @@ function restoreFolderFromS3(bucketName: string, folderName: string) {
                     Bucket: bucketName,
                     Key: item.Key
                 }
-                console.log(item.Key?.substring(item.Key?.indexOf('/') + 1))
 
                 s3.send(new GetObjectCommand(params))
                     .then(async data => {
