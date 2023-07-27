@@ -90,5 +90,5 @@ function restoreFolderFromS3(bucketName: string, folderName: string) {
         })
 }
 
-restoreFolderFromS3('wip-medias', 'auth_info_multi-100023/');
+//restoreFolderFromS3('wip-medias', 'auth_info_multi-100023/');
 
